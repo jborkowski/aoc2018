@@ -1,17 +1,37 @@
 module Day1
-  ( calcResult
+  ( part1
+  , part2
   ) where
 
 import System.IO
+import Data.Maybe ( fromJust )
+import qualified Data.Set as Set
 
 readLines :: FilePath -> IO [String]
 readLines = fmap lines . readFile
 
-makeInt :: [String] -> [Int]
-makeInt =  map toInt
+toIntArray :: [String] -> [Integer]
+toIntArray =  map makeInteger
 
-toInt :: String -> Int
-toInt = read . filter (/= '+')  
+readInts :: FilePath -> IO [Integer]
+readInts = fmap (toIntArray . lines) . readFile
 
-calcResult :: FilePath -> IO Int
-calcResult path = fmap (sum . makeInt) (readLines path)
+makeInteger :: String -> Integer
+makeInteger = read . filter (/= '+')  
+
+part1 :: FilePath -> IO Integer
+part1 path = fmap (sum) (readInts path)
+
+partSums :: (Num n) => [n] -> [n]
+partSums = scanl (+) 0
+
+part2 :: FilePath -> IO Integer
+part2 path = fmap (fromJust . firstDuplicate . partSums . cycle ) (readInts path)
+
+firstDuplicate :: Ord a => [a] -> Maybe a
+firstDuplicate = go Set.empty
+  where
+    go _ [] = Nothing
+    go seen (x:xs)
+      | x `Set.member` seen = Just x
+      | otherwise           = go (Set.insert x seen) xs
