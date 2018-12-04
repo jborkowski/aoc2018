@@ -1,5 +1,6 @@
 module Day4
-  (
+  ( part1
+  , part2
   ) where
 
 
@@ -76,11 +77,10 @@ minutes :: NominalDiffTime -> Minutes
 minutes n = floor . realToFrac $ n / 60
 
 part1 :: [Sleep] ->  Int
-part1 sleepMins = biggestSleeper
+part1 sleepMins = biggestSleeper * timeOfLonger
   where
     biggestSleeper = biggestKey . aggregateOccurrences . toIdDuration $ sleepMins
-    timeOfLonger   = timeMinutes (maximumBy (comparing duration) $ filter (\i -> guardId i == biggestSleeper) sleepMins)
-
+    timeOfLonger   = timeMinutes (maximumBy (comparing duration) $ filter (\i -> guardId i == biggestSleeper) sleepMins) -- This function is wrong
 sleptAccidents :: [String] -> [Sleep]
 sleptAccidents = toSleepTimes . prepareInput
   
@@ -104,3 +104,8 @@ biggestSleeper = biggestKey . aggregateOccurrences . toIdDuration . sleptAcciden
 
 runTest :: () -> Int
 runTest _ = part1 . sleptAccidents $ testData
+
+part2 :: [Sleep] -> Int
+part2 sleepMins = gId * minute
+  where
+    (gId, minute) = biggestKey (countOccurrences (map (\i -> (guardId i, duration i)) sleepMins))
