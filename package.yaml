@@ -1,6 +1,6 @@
 name:                aoc2018
 version:             0.1.0.0
-github:              "githubuser/aoc2018"
+github:              "jborkowski/aoc2018"
 license:             BSD3
 author:              "Jonatan Borkowski"
 maintainer:          "jonatanborkowski@wp.pl"
@@ -22,9 +22,12 @@ description:         Please see the README on GitHub at <https://github.com/gith
 dependencies:
 - base >= 4.7 && < 5
 - containers
+- megaparsec
 
 library:
-  source-dirs: src
+  source-dirs:
+    - src
+    - common
 
 executables:
   aoc2018-exe:
