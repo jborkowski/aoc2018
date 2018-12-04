@@ -1,6 +1,8 @@
 flags: {}
 packages:
 - .
-extra-deps: []
+extra-deps:
+- primitive-0.6.4.0
+- time-1.9.2
 resolver: lts-12.20
 require-stack-version: ! '>=1.9.1'

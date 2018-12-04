@@ -5,7 +5,6 @@ import System.IO
 import Text.Megaparsec ( ParseError, Parsec, parse, parseErrorPretty ) -- megaparsec 6.5
 import Text.Megaparsec.Char.Lexer (decimal, signed)
 import Data.Void
--- import qualified Data.Set as Set
 import           Data.Map (Map)
 import qualified Data.Map as Map
 
@@ -34,3 +33,6 @@ countOccurrences items = Map.fromListWith (+) [ (item, 1)| item <- items]
 
 count :: (Foldable t) => (a -> Bool) -> t a -> Int
 count predicate = foldl (\acc x -> if predicate x then acc + 1 else acc) 0
+
+aggregateOccurrences :: (Ord a) => (Num b) => [(a, b)] -> Map a b
+aggregateOccurrences = Map.fromListWith (+)
