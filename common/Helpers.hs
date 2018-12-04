@@ -1,35 +1,36 @@
-module Helpers
-  ( readLines
-  ) where
+module Helpers where
 
 import System.IO
-import System.Environment
-import Text.Printf
-import Text.Megaparsec (many, parse, parseErrorTextPretty, Parsec, eof)
-import Text.Megaparsec.Error (errorBundlePretty)
+-- import Text.Megaparsec ( ParseErrorBundle, parse, errorBundlePretty ) -- megaparsec 7.0
+import Text.Megaparsec ( ParseError, Parsec, parse, parseErrorPretty ) -- megaparsec 6.5
+import Text.Megaparsec.Char.Lexer (decimal, signed)
 import Data.Void
-import Data.List
-import qualified Data.Set as Set
+-- import qualified Data.Set as Set
 import           Data.Map (Map)
 import qualified Data.Map as Map
 
 readLines :: FilePath -> IO [String]
 readLines = fmap lines . readFile
 
+type OccurrencesMap a = Map a Int
 type Parser = Parsec Void String  
 
-parseLine :: IO a -> Parser a -> IO a
+parseLine :: String -> Parser a -> IO a
 parseLine inputLine p =
-  do line <- inputLine
-     case parse p "line.txt" line of
-       Left e -> fail (errorBundlePretty e)
+     case parse p "line.txt" inputLine of
+       Left e -> fail (parseErrorPretty e)
        Right a -> return a
 
 getParsedLines :: FilePath -> Parser a -> IO [a]
-getParsedLines path p = error "Z"
+getParsedLines path p =
+  do inputLines <- readLines path
+     sequence $ map (\s -> parseLine s p) inputLines
 
-  
+parseNumber :: Integral a => Parser a
+parseNumber = signed (return ()) decimal
 
--- getParsedLines :: Int -> Parser a -> IO [a]
--- getParsedLines i p = getParsedInput i (many (p <* newline) <* eof)
-  
+countOccurrences :: (Ord a) => [a] -> OccurrencesMap a
+countOccurrences items = Map.fromListWith (+) [ (item, 1)| item <- items]
+
+count :: (Foldable t) => (a -> Bool) -> t a -> Int
+count predicate = foldl (\acc x -> if predicate x then acc + 1 else acc) 0
